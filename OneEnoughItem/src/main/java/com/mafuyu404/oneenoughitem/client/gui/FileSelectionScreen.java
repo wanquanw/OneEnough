@@ -123,17 +123,17 @@ public class FileSelectionScreen extends Screen {
         // Match the pre-26.1.2 render order: the list and controls are below labels.
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
-        graphics.centeredText(this.font, this.title, centerX, panelY - 35, 0xFFFFFF);
+        graphics.centeredText(this.font, this.title, centerX, panelY - 35, 0xFFFFFFFF);
 
         Component fileCountText = Component.translatable("gui.oneenoughitem.file_selection.files_found", this.filteredFiles.size());
-        graphics.text(this.font, fileCountText, panelX, panelY + PANEL_HEIGHT + 5, 0xAAAAAA);
+        graphics.text(this.font, fileCountText, panelX, panelY + PANEL_HEIGHT + 5, 0xFFAAAAAA);
 
         if (this.allFiles.isEmpty()) {
             Component helpText = Component.translatable("gui.oneenoughitem.file_selection.no_files");
-            graphics.centeredText(this.font, helpText, centerX, centerY, 0xFF6666);
+            graphics.centeredText(this.font, helpText, centerX, centerY, 0xFFFF6666);
         } else {
             Component helpText = Component.translatable("gui.oneenoughitem.file_selection.help");
-            graphics.centeredText(this.font, helpText, centerX, panelY + PANEL_HEIGHT + 15, 0xCCCCCC);
+            graphics.centeredText(this.font, helpText, centerX, panelY + PANEL_HEIGHT + 15, 0xFFCCCCCC);
         }
     }
 

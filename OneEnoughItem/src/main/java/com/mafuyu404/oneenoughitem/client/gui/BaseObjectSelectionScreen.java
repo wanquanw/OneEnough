@@ -164,10 +164,10 @@ public abstract class BaseObjectSelectionScreen<T> extends Screen {
         int totalPages = (this.filteredObjects.size() + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
         String pageInfo = (this.currentPage + 1) + " / " + Math.max(1, totalPages);
         int buttonY = 45 + GRID_HEIGHT * 18 + 10;
-        graphics.centeredText(this.font, pageInfo, this.width / 2, buttonY + 25, 0xFFFFFF);
+        graphics.centeredText(this.font, pageInfo, this.width / 2, buttonY + 25, 0xFFFFFFFF);
 
         String count = this.filteredObjects.size() + " entries";
-        graphics.text(this.font, count, 10, buttonY + 35, 0xFFFFFF);
+        graphics.text(this.font, count, 10, buttonY + 35, 0xFFFFFFFF);
     }
 
     protected void filterObjects() {

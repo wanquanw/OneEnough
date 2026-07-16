@@ -386,14 +386,14 @@ public class ReplacementEditorScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         graphics.centeredText(Minecraft.getInstance().font, this.title,
-                centerX, 20, 0xFFFFFF);
+                centerX, 20, 0xFFFFFFFF);
 
         Component fileName = this.manager.getCurrentFileName().isEmpty()
                 ? Component.translatable("gui.oneenoughitem.current_file.none").withStyle(ChatFormatting.GRAY)
                 : Component.literal(this.manager.getCurrentFileName()).withStyle(ChatFormatting.AQUA);
 
         Component fileInfo = Component.translatable("gui.oneenoughitem.current_file", fileName);
-        graphics.centeredText(Minecraft.getInstance().font, fileInfo, centerX, 8, 0xAAAAAA);
+        graphics.centeredText(Minecraft.getInstance().font, fileInfo, centerX, 8, 0xFFAAAAAA);
 
         Component matchComponent = Component.translatable("gui.oneenoughitem.match", getDataIdComponent());
 
@@ -402,7 +402,7 @@ public class ReplacementEditorScreen extends Screen {
                 matchComponent,
                 leftPanelX + PANEL_WIDTH / 2,
                 panelY - 12,
-                0xFFFFFF
+                0xFFFFFFFF
         );
 
         Component resultComponent = Component.translatable("gui.oneenoughitem.result", getDataIdComponent());
@@ -411,7 +411,7 @@ public class ReplacementEditorScreen extends Screen {
                 resultComponent,
                 rightPanelX + PANEL_WIDTH / 2,
                 panelY - 12,
-                0xFFFFFF);
+                0xFFFFFFFF);
 
         Component summaryComponent = Component.translatable(
                 "gui.oneenoughitem.match_summary",
@@ -425,7 +425,7 @@ public class ReplacementEditorScreen extends Screen {
                 summaryComponent,
                 leftPanelX,
                 panelY + PANEL_HEIGHT + 8,
-                0xAAAAAA
+                0xFFAAAAAA
         );
 
         Component resultText = this.resultDataWidget != null
@@ -433,11 +433,11 @@ public class ReplacementEditorScreen extends Screen {
                 : this.resultTagWidget != null
                 ? Component.translatable("gui.oneenoughitem.tag_selected")
                 : Component.translatable("gui.oneenoughitem.no_result");
-        graphics.text(Minecraft.getInstance().font, resultText, rightPanelX, panelY + PANEL_HEIGHT + 8, 0xAAAAAA);
+        graphics.text(Minecraft.getInstance().font, resultText, rightPanelX, panelY + PANEL_HEIGHT + 8, 0xFFAAAAAA);
 
         graphics.centeredText(Minecraft.getInstance().font,
                 Component.translatable("gui.oneenoughitem.save_to_cache"),
-                centerX, panelY + PANEL_HEIGHT + 25, 0xFFFF00);
+                centerX, panelY + PANEL_HEIGHT + 25, 0xFFFFFF00);
 
         if (this.showObjectDropdown && this.objectDropdownPanel != null) {
             this.objectDropdownPanel.extractRenderState(graphics, mouseX, mouseY, partialTick);

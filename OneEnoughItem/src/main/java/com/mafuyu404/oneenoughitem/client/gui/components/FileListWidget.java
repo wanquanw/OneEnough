@@ -138,14 +138,14 @@ public class FileListWidget extends ObjectSelectionList<FileListWidget.FileEntry
             GuiUtils.drawFileIcon(graphics, x + 1, y + 4, iconChar);
 
             int fileNameX = x + 16;
-            graphics.text(FileListWidget.this.minecraft.font, fileName, fileNameX, y + 2, 0xFFFFFF);
+            graphics.text(FileListWidget.this.minecraft.font, fileName, fileNameX, y + 2, 0xFFFFFFFF);
 
             String datapackName = "[" + this.fileInfo.datapackName() + "]";
-            graphics.text(FileListWidget.this.minecraft.font, datapackName, fileNameX, y + 12, 0xAAAAAA);
+            graphics.text(FileListWidget.this.minecraft.font, datapackName, fileNameX, y + 12, 0xFFAAAAAA);
 
             String fullPath = this.fileInfo.fullPath();
             int pathX = fileNameX + FileListWidget.this.minecraft.font.width(datapackName) + 5;
-            graphics.text(FileListWidget.this.minecraft.font, fullPath, pathX, y + 12, 0x888888);
+            graphics.text(FileListWidget.this.minecraft.font, fullPath, pathX, y + 12, 0xFF888888);
         }
 
         @Override

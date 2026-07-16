@@ -109,7 +109,7 @@ public abstract class BaseTagSelectionScreen extends Screen {
         GuiUtils.drawPanelBackground(graphics, panelX, panelY, panelW, panelH);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         String tagCount = this.filteredTags.size() + " tags";
-        graphics.text(this.font, tagCount, 10, this.height - 30, 0xFFFFFF);
+        graphics.text(this.font, tagCount, 10, this.height - 30, 0xFFFFFFFF);
     }
 
     protected void filterTags() {

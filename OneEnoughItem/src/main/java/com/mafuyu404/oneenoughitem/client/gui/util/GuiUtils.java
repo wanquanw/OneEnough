@@ -126,7 +126,7 @@ public class GuiUtils {
     public static void drawFileIcon(GuiGraphicsExtractor graphics, int x, int y, String fileType) {
         graphics.fill(x, y, x + 12, y + 12, 0xFF4CAF50);
         drawBorder(graphics, x, y, 12, 12, 0xFF2E7D32);
-        graphics.text(Minecraft.getInstance().font, fileType, x + 3, y + 2, 0xFFFFFF);
+        graphics.text(Minecraft.getInstance().font, fileType, x + 3, y + 2, 0xFFFFFFFF);
     }
 
     public static void drawObjectDropdownBackground(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
