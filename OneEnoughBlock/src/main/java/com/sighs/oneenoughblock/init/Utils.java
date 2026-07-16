@@ -4,7 +4,7 @@ import com.sighs.oneenoughblock.Oneenoughblock;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,33 +17,33 @@ public class Utils {
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<T>> BlockState saveState(BlockState from, BlockState to) {
         if (OEBConfig.get().extendedBlockProperty()) return to;
-        for (Map.Entry<Property<?>, Comparable<?>> entry :  from.getValues().entrySet()) {
-            to = to.trySetValue((Property<T>) entry.getKey(), (T) entry.getValue());
+        for (Property.Value<?> value : from.getValues().toList()) {
+            to = to.trySetValue((Property<T>) value.property(), (T) value.value());
         }
         return to;
     }
 
     public static String getBlockRegistryName(Block block) {
         if (block == null) return null;
-        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
         return id.toString();
     }
 
     public static Block getBlockById(String id) {
         if (id == null || id.isEmpty()) return null;
         try {
-            return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
+            return BuiltInRegistries.BLOCK.getValue(Identifier.parse(id));
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static boolean isTagExists(ResourceLocation tagId, HolderLookup.RegistryLookup<Block> registryLookup) {
+    public static boolean isTagExists(Identifier tagId, HolderLookup.RegistryLookup<Block> registryLookup) {
         TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, tagId);
         return registryLookup.get(tagKey).isPresent();
     }
 
-    public static Collection<Block> getBlocksOfTag(ResourceLocation tagId, HolderLookup.RegistryLookup<Block> registryLookup) {
+    public static Collection<Block> getBlocksOfTag(Identifier tagId, HolderLookup.RegistryLookup<Block> registryLookup) {
         TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, tagId);
         Collection<Block> result = new HashSet<>();
 
@@ -72,7 +72,7 @@ public class Utils {
             if (id == null || id.isEmpty()) continue;
 
             if (id.startsWith("#")) {
-                ResourceLocation tagId = ResourceLocation.tryParse(id.substring(1));
+                Identifier tagId = Identifier.tryParse(id.substring(1));
                 if (tagId == null) {
                     Oneenoughblock.LOGGER.warn("Invalid tag ID format: {}", id);
                     continue;

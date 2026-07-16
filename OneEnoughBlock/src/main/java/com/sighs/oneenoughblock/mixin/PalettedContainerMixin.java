@@ -6,6 +6,7 @@ import net.minecraft.util.BitStorage;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.Palette;
+import net.minecraft.world.level.chunk.PaletteResize;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -33,7 +34,7 @@ public class PalettedContainerMixin implements IPalettedContainer {
             BlockState current = palette.valueFor(i);
             BlockState replacement = resolveReplacement(current).orElse(null);
             if (replacement != null) {
-                int targetId = palette.idFor(replacement);
+                int targetId = palette.idFor(replacement, PaletteResize.noResizeExpected());
                 idMap.put(i, targetId);
             }
         }

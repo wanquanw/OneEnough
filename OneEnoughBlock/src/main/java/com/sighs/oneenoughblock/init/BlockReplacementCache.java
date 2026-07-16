@@ -6,7 +6,7 @@ import com.sighs.oneenoughblock.Oneenoughblock;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
@@ -29,7 +29,7 @@ public class BlockReplacementCache {
         return TagMapCache.getOrDefault(tagId, null);
     }
 
-    public static String matchTag(ResourceLocation tagId) {
+    public static String matchTag(Identifier tagId) {
         return tagId != null ? matchTag(tagId.toString()) : null;
     }
 
@@ -37,7 +37,7 @@ public class BlockReplacementCache {
         return tagId != null && TagMapCache.containsKey(tagId);
     }
 
-    public static boolean isTagReplaced(ResourceLocation tagId) {
+    public static boolean isTagReplaced(Identifier tagId) {
         return tagId != null && isTagReplaced(tagId.toString());
     }
 
@@ -56,7 +56,10 @@ public class BlockReplacementCache {
 
     private static Block resolveInternal(Block source, HolderLookup.RegistryLookup<Block> lookup) {
         var direct = resolveTarget(source);
-        return direct.orElseGet(() -> resolveTargetByTags(source, lookup).orElse(null));
+        if (direct.isPresent() || lookup == null) {
+            return direct.orElse(null);
+        }
+        return resolveTargetByTags(source, lookup).orElse(null);
 
     }
 
@@ -64,18 +67,21 @@ public class BlockReplacementCache {
         var id = BuiltInRegistries.BLOCK.getKey(source);
         String target = matchBlock(id.toString());
         if (target != null) {
-            Block b = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(target));
+            Block b = BuiltInRegistries.BLOCK.getValue(Identifier.parse(target));
             return Optional.of(b);
         }
         return Optional.empty();
     }
 
     public static Optional<Block> resolveTargetByTags(Block source, HolderLookup.RegistryLookup<Block> registryLookup) {
+        if (source == null || registryLookup == null) {
+            return Optional.empty();
+        }
         var sourceHolder = source.builtInRegistryHolder();
 
         for (var entry : TagMapCache.entrySet()) {
-            ResourceLocation tagId = ResourceLocation.parse(entry.getKey());
-            ResourceLocation targetId = ResourceLocation.parse(entry.getValue());
+            Identifier tagId = Identifier.parse(entry.getKey());
+            Identifier targetId = Identifier.parse(entry.getValue());
 
             TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, tagId);
 
@@ -85,7 +91,7 @@ public class BlockReplacementCache {
             var holderSet = tagOptional.get();
             if (!holderSet.contains(sourceHolder)) continue;
 
-            Block target = BuiltInRegistries.BLOCK.get(targetId);
+            Block target = BuiltInRegistries.BLOCK.getValue(targetId);
             return Optional.of(target);
         }
 

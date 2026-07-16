@@ -10,7 +10,7 @@ import com.sighs.oneenoughblock.init.OEBConfig;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,13 +53,13 @@ public class ServerEventHandler {
 
         @Override
         protected boolean tryResolveData(String id, HolderLookup.RegistryLookup<Block> registryLookup) {
-            BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
+            BuiltInRegistries.BLOCK.get(Identifier.parse(id));
             return true;
         }
 
         @Override
         protected boolean tryResolveTag(String tagId, HolderLookup.RegistryLookup<Block> registryLookup) {
-            TagKey<Block> tag = TagKey.create(Registries.BLOCK, ResourceLocation.parse(tagId));
+            TagKey<Block> tag = TagKey.create(Registries.BLOCK, Identifier.parse(tagId));
             for (Block b : BuiltInRegistries.BLOCK) {
                 if (b.builtInRegistryHolder().is(tag)) return true;
             }

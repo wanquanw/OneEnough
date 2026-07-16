@@ -9,7 +9,7 @@ import cc.sighs.oelib.config.model.ConfigStorageFormat;
 import com.mafuyu404.oneenoughitem.data.Replacements;
 import com.mafuyu404.oneenoughitem.init.config.OEIConfig;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -22,7 +22,7 @@ public record OEBConfig(
     private static final String FILE_NAME = "common";
 
     public static final ConfigUnit<OEBConfig> UNIT = ConfigRecordCodecBuilder.create(
-            ResourceLocation.fromNamespaceAndPath("oeb", "common_config"),
+            Identifier.fromNamespaceAndPath("oeb", "common_config"),
             instance -> instance.group(
                     ConfigField.bool("Replace_Existed_Block")
                             .defaultValue(false)
@@ -63,7 +63,7 @@ public record OEBConfig(
     }
 
     public static void register() {
-        ConfigFixRegistry.register(ResourceLocation.fromNamespaceAndPath("oeb", "common_config"), 1, b ->
+        ConfigFixRegistry.register(Identifier.fromNamespaceAndPath("oeb", "common_config"), 1, b ->
                 b.fix(0, 1, dyn -> {
                     var ctx = new ConfigFixRegistry.FixContext(dyn);
                     dyn = ctx.rename("common.Replace_Existed_Block", "Replace_Existed_Block");
@@ -74,6 +74,6 @@ public record OEBConfig(
                     return dyn;
                 })
         );
-        ConfigManager.registerServer(UNIT, player -> player.hasPermissions(4));
+        ConfigManager.registerServer(UNIT, player -> player.permissions() == net.minecraft.server.permissions.PermissionSet.ALL_PERMISSIONS);
     }
 }

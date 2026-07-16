@@ -5,10 +5,10 @@ import com.mafuyu404.oneenoughitem.client.gui.ReplacementEditorScreen;
 import com.mafuyu404.oneenoughitem.client.gui.util.GuiUtils;
 import com.mafuyu404.oneenoughitem.util.ReplacementControl;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -48,22 +48,22 @@ public class BlockSelectionScreen extends BaseObjectSelectionScreen<Block> {
 
     @Override
     protected String getName(Block obj) {
-        return obj.getName().getString();
+        return new ItemStack(obj).getHoverName().getString();
     }
 
     @Override
-    protected void renderObject(Block obj, GuiGraphics graphics, int x, int y) {
+    protected void renderObject(Block obj, GuiGraphicsExtractor graphics, int x, int y) {
         ItemStack stack = ReplacementControl.withSkipReplacement(() -> new ItemStack(obj.asItem()));
         GuiUtils.drawItemBox(graphics, x, y, 18, 18);
-        graphics.renderItem(stack, x + 1, y + 1);
-        graphics.renderItemDecorations(Minecraft.getInstance().font, stack, x + 1, y + 1);
+        graphics.item(stack, x + 1, y + 1);
+        graphics.itemDecorations(Minecraft.getInstance().font, stack, x + 1, y + 1);
     }
 
     @Override
     protected void onSelectSingle(String id) {
-        var key = ResourceLocation.tryParse(id);
+        var key = Identifier.tryParse(id);
         if (key == null) return;
-        Block block = BuiltInRegistries.BLOCK.get(key);
+        Block block = BuiltInRegistries.BLOCK.getValue(key);
         if (block.asItem() == Items.AIR) return;
         if (this.isForMatch) this.parent.addMatchItem(block.asItem());
         else this.parent.setResultItem(block.asItem());
@@ -71,9 +71,9 @@ public class BlockSelectionScreen extends BaseObjectSelectionScreen<Block> {
 
     @Override
     protected boolean isSelectable(String id, boolean forMatch) {
-        var key = ResourceLocation.tryParse(id);
+        var key = Identifier.tryParse(id);
         if (key == null) return false;
-        Block block = BuiltInRegistries.BLOCK.get(key);
+        Block block = BuiltInRegistries.BLOCK.getValue(key);
         return block.asItem() != Items.AIR;
     }
 

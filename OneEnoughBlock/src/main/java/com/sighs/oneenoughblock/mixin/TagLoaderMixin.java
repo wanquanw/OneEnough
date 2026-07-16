@@ -5,7 +5,7 @@ import com.mafuyu404.oneenoughitem.init.config.OEIConfig;
 import com.mafuyu404.oneenoughitem.util.MixinUtils;
 import com.sighs.oneenoughblock.init.BlockReplacementCache;
 import com.sighs.oneenoughblock.init.OEBConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
 import org.spongepowered.asm.mixin.Final;
@@ -28,8 +28,8 @@ public abstract class TagLoaderMixin<T> {
 
     @Inject(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;", at = @At("RETURN"))
     private void oneenoughblock$processTags(ResourceManager resourceManager,
-                                            CallbackInfoReturnable<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> cir) {
-        // 仅处理 blocks 标签域
+                                            CallbackInfoReturnable<Map<Identifier, List<TagLoader.EntryWithSource>>> cir) {
+        // Only process the block tag directory.
         if (!BLOCKS_TAG_DIR.equals(this.directory)) return;
 
         var tags = cir.getReturnValue();
@@ -47,7 +47,7 @@ public abstract class TagLoaderMixin<T> {
         } catch (Exception ignored) {
         }
 
-        for (Map.Entry<ResourceLocation, List<TagLoader.EntryWithSource>> tagEntry : tags.entrySet()) {
+        for (Map.Entry<Identifier, List<TagLoader.EntryWithSource>> tagEntry : tags.entrySet()) {
             var entries = tagEntry.getValue();
             if (entries == null || entries.isEmpty()) continue;
             var it = entries.iterator();

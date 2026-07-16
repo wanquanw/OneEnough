@@ -48,7 +48,7 @@ public abstract class LevelChunkSectionMixin {
 //        BlockReplacementCache.resolveTarget(current.getBlock()).ifPresent(target -> {
 //            setBlockState(x, y, z, target.defaultBlockState(), false);
 //        });
-//        // 标签替换
+//        // Apply tag-based replacements.
 //        BlockReplacementCache.resolveTargetByTags(current.getBlock()).ifPresent(target -> {
 //            setBlockState(x, y, z, target.defaultBlockState(), false);
 //        });
