@@ -8,6 +8,25 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
+def modJarFiles = [
+        file("OneEnoughItem/build/libs/${oei_mod_name}-neoforge-${minecraft_version}-${oei_mod_version}.jar"),
+        file("OneEnoughBlock/build/libs/${oeb_mod_name}-neoforge-${minecraft_version}-${oeb_mod_version}.jar"),
+        file("OneEnoughFluid/build/libs/${oef_mod_name}-neoforge-${minecraft_version}-${oef_mod_version}.jar")
+]
+
+tasks.register('collectModJars', Copy) {
+    group = 'build'
+    description = 'Builds OneEnoughItem, OneEnoughBlock, and OneEnoughFluid, then collects their JARs in build/libs.'
+
+    dependsOn ':OneEnoughItem:jar', ':OneEnoughBlock:jar', ':OneEnoughFluid:jar'
+    from(modJarFiles)
+    into(layout.buildDirectory.dir('libs'))
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('collectModJars')
+}
+
 idea {
     module {
         downloadSources = true
