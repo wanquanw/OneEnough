@@ -33,6 +33,7 @@ public abstract class TagLoaderMixin<T> {
     private String directory;
 
     private static final String ITEMS_TAG_DIR = "tags/items";
+    private static final String ITEM_TAG_TYPE = "items";
 
     @Inject(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;", at = @At("HEAD"))
     private void oei$beginOverrideForTags(ResourceManager resourceManager,
@@ -55,10 +56,7 @@ public abstract class TagLoaderMixin<T> {
     private void oei$replaceTagItems(ResourceManager resourceManager,
                                      CallbackInfoReturnable<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> cir) {
 
-        String tagType = getTagType(this.directory);
-        if (tagType == null) {
-            return; // 只处理 items 标签
-        }
+        if (!ITEMS_TAG_DIR.equals(this.directory)) return;
 
         Map<ResourceLocation, List<TagLoader.EntryWithSource>> tags = cir.getReturnValue();
         if (tags == null || tags.isEmpty()) return;
@@ -109,16 +107,9 @@ public abstract class TagLoaderMixin<T> {
             if (selectorMapped == null && fallbackEnabled) {
                 selectorMapped = ItemReplacementCache.matchTag(tagId);
             }
-            if (shouldMirrorTags(selectorMapped, existingItemIds)) {
-                mirroredEntries.add(new TagLoader.EntryWithSource(
-                        TagEntry.element(new ResourceLocation(selectorMapped)),
-                        "oneenoughitem:tag_mirror"
-                ));
-                existingItemIds.add(selectorMapped);
+            if (tryMirrorTagItem(selectorMapped, selector, tagId, mirroredEntries, existingItemIds)) {
                 mirrored++;
                 touched = true;
-                Oneenoughitem.LOGGER.debug("Item tag mirror: add '{}' to {} (selector='{}')",
-                        selectorMapped, tagId, selector);
             }
 
             while (iterator.hasNext()) {
@@ -136,16 +127,9 @@ public abstract class TagLoaderMixin<T> {
                 }
 
                 if (mapped != null) {
-                    if (!tracked.remove() && shouldMirrorTags(mapped, existingItemIds)) {
-                        mirroredEntries.add(new TagLoader.EntryWithSource(
-                                TagEntry.element(new ResourceLocation(mapped)),
-                                "oneenoughitem:tag_mirror"
-                        ));
-                        existingItemIds.add(mapped);
+                    if (!tracked.remove() && tryMirrorTagItem(mapped, fromStr, tagId, mirroredEntries, existingItemIds)) {
                         mirrored++;
                         touched = true;
-                        Oneenoughitem.LOGGER.debug("Item tag mirror: add '{}' to {} (source='{}')",
-                                mapped, tagId, fromStr);
                     }
 
                     boolean shouldReplace = false;
@@ -157,12 +141,12 @@ public abstract class TagLoaderMixin<T> {
 
                     if (rules != null) {
                         shouldReplace = rules.tag()
-                                .map(m -> m.get(tagType))
+                                .map(m -> m.get(ITEM_TAG_TYPE))
                                 .map(mode -> mode == Replacements.ProcessingMode.REPLACE)
                                 .orElse(false);
                     } else if (fallbackEnabled) {
                         // 若当前映射为空且无默认规则，维持原有回退逻辑
-                        shouldReplace = ItemReplacementCache.shouldReplaceInTagType(fromStr, tagType);
+                        shouldReplace = ItemReplacementCache.shouldReplaceInTagType(fromStr, ITEM_TAG_TYPE);
                     }
 
                     if (shouldReplace) {
@@ -170,7 +154,7 @@ public abstract class TagLoaderMixin<T> {
                         dropped++;
                         touched = true;
                         Oneenoughitem.LOGGER.debug("Item tag rewrite: drop '{}' from {} (replaced by '{}', rule={})",
-                                fromStr, tagId, mapped, tagType);
+                                fromStr, tagId, mapped, ITEM_TAG_TYPE);
                     }
                 }
             }
@@ -192,14 +176,20 @@ public abstract class TagLoaderMixin<T> {
         }
     }
 
-    private boolean shouldMirrorTags(String mapped, Set<String> existingItemIds) {
-        if (!OEIConfig.get().deeperReplace()) return false;
-        if (Utils.isItemIdEmpty(mapped) || existingItemIds.contains(mapped)) return false;
-        return Utils.getItemById(mapped) != null;
+    private boolean tryMirrorTagItem(String mapped, String source, ResourceLocation tagId,
+                                     List<TagLoader.EntryWithSource> mirroredEntries, Set<String> existingItemIds) {
+        if (!OEIConfig.get().deeperReplace()
+                || Utils.isItemIdEmpty(mapped)
+                || existingItemIds.contains(mapped)
+                || Utils.getItemById(mapped) == null) return false;
+
+        mirroredEntries.add(new TagLoader.EntryWithSource(
+                TagEntry.element(new ResourceLocation(mapped)),
+                "oneenoughitem:tag_mirror"
+        ));
+        existingItemIds.add(mapped);
+        Oneenoughitem.LOGGER.debug("Item tag mirror: add '{}' to {} (source='{}')", mapped, tagId, source);
+        return true;
     }
 
-    private String getTagType(String directory) {
-        // 仅在 item 域处理 items 标签
-        return ITEMS_TAG_DIR.equals(directory) ? "items" : null;
-    }
 }
