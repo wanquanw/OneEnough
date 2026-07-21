@@ -95,11 +95,11 @@ public abstract class TagLoaderMixin<T> {
             boolean touched = false;
 
             String selector = "#" + tagId;
-            String selectorMapped = currentItemMap.get(selector);
-            if (selectorMapped == null && fallbackEnabled) {
-                selectorMapped = ItemReplacementCache.matchTag(tagId);
+            String targetItemId = currentItemMap.get(selector);
+            if (targetItemId == null && fallbackEnabled) {
+                targetItemId = ItemReplacementCache.matchTag(tagId);
             }
-            if (tryMirrorTagItem(selectorMapped, selector, tagId, mirroredEntries)) {
+            if (tryMirrorTagItem(targetItemId, selector, tagId, mirroredEntries)) {
                 mirrored++;
                 touched = true;
             }
