@@ -33,7 +33,6 @@ public abstract class TagLoaderMixin<T> {
     private String directory;
 
     private static final String ITEMS_TAG_DIR = "tags/items";
-    private static final String ITEM_TAG_TYPE = "items";
 
     @Inject(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;", at = @At("HEAD"))
     private void oei$beginOverrideForTags(ResourceManager resourceManager,
@@ -56,7 +55,10 @@ public abstract class TagLoaderMixin<T> {
     private void oei$replaceTagItems(ResourceManager resourceManager,
                                      CallbackInfoReturnable<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> cir) {
 
-        if (!ITEMS_TAG_DIR.equals(this.directory)) return;
+        String tagType = getTagType(this.directory);
+        if (tagType == null) {
+            return; // 只处理 items 标签
+        }
 
         Map<ResourceLocation, List<TagLoader.EntryWithSource>> tags = cir.getReturnValue();
         if (tags == null || tags.isEmpty()) return;
@@ -141,12 +143,12 @@ public abstract class TagLoaderMixin<T> {
 
                     if (rules != null) {
                         shouldReplace = rules.tag()
-                                .map(m -> m.get(ITEM_TAG_TYPE))
+                                .map(m -> m.get(tagType))
                                 .map(mode -> mode == Replacements.ProcessingMode.REPLACE)
                                 .orElse(false);
                     } else if (fallbackEnabled) {
                         // 若当前映射为空且无默认规则，维持原有回退逻辑
-                        shouldReplace = ItemReplacementCache.shouldReplaceInTagType(fromStr, ITEM_TAG_TYPE);
+                        shouldReplace = ItemReplacementCache.shouldReplaceInTagType(fromStr, tagType);
                     }
 
                     if (shouldReplace) {
@@ -154,7 +156,7 @@ public abstract class TagLoaderMixin<T> {
                         dropped++;
                         touched = true;
                         Oneenoughitem.LOGGER.debug("Item tag rewrite: drop '{}' from {} (replaced by '{}', rule={})",
-                                fromStr, tagId, mapped, ITEM_TAG_TYPE);
+                                fromStr, tagId, mapped, tagType);
                     }
                 }
             }
@@ -190,6 +192,11 @@ public abstract class TagLoaderMixin<T> {
         existingItemIds.add(mapped);
         Oneenoughitem.LOGGER.debug("Item tag mirror: add '{}' to {} (source='{}')", mapped, tagId, source);
         return true;
+    }
+
+    private String getTagType(String directory) {
+        // 仅在 item 域处理 items 标签
+        return ITEMS_TAG_DIR.equals(directory) ? "items" : null;
     }
 
 }
