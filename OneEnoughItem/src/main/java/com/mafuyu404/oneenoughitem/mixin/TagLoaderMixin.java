@@ -19,11 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Mixin(TagLoader.class)
 public abstract class TagLoaderMixin<T> {
@@ -90,14 +88,6 @@ public abstract class TagLoaderMixin<T> {
             List<TagLoader.EntryWithSource> entries = tagEntry.getValue();
             if (entries == null) continue;
 
-            Set<String> existingItemIds = new HashSet<>();
-            for (TagLoader.EntryWithSource tracked : entries) {
-                TagEntry e = tracked.entry();
-                if (!tracked.remove() && !e.isTag()) {
-                    existingItemIds.add(e.getId().toString());
-                }
-            }
-
             Iterator<TagLoader.EntryWithSource> iterator = entries.iterator();
             List<TagLoader.EntryWithSource> mirroredEntries = new ArrayList<>();
             int dropped = 0;
@@ -109,7 +99,7 @@ public abstract class TagLoaderMixin<T> {
             if (selectorMapped == null && fallbackEnabled) {
                 selectorMapped = ItemReplacementCache.matchTag(tagId);
             }
-            if (tryMirrorTagItem(selectorMapped, selector, tagId, mirroredEntries, existingItemIds)) {
+            if (tryMirrorTagItem(selectorMapped, selector, tagId, mirroredEntries)) {
                 mirrored++;
                 touched = true;
             }
@@ -129,7 +119,7 @@ public abstract class TagLoaderMixin<T> {
                 }
 
                 if (mapped != null) {
-                    if (!tracked.remove() && tryMirrorTagItem(mapped, fromStr, tagId, mirroredEntries, existingItemIds)) {
+                    if (!tracked.remove() && tryMirrorTagItem(mapped, fromStr, tagId, mirroredEntries)) {
                         mirrored++;
                         touched = true;
                     }
@@ -179,17 +169,15 @@ public abstract class TagLoaderMixin<T> {
     }
 
     private boolean tryMirrorTagItem(String mapped, String source, ResourceLocation tagId,
-                                     List<TagLoader.EntryWithSource> mirroredEntries, Set<String> existingItemIds) {
+                                     List<TagLoader.EntryWithSource> mirroredEntries) {
         if (!OEIConfig.get().deeperReplace()
                 || Utils.isItemIdEmpty(mapped)
-                || existingItemIds.contains(mapped)
                 || Utils.getItemById(mapped) == null) return false;
 
         mirroredEntries.add(new TagLoader.EntryWithSource(
                 TagEntry.element(new ResourceLocation(mapped)),
                 "oneenoughitem:tag_mirror"
         ));
-        existingItemIds.add(mapped);
         Oneenoughitem.LOGGER.debug("Item tag mirror: add '{}' to {} (source='{}')", mapped, tagId, source);
         return true;
     }
